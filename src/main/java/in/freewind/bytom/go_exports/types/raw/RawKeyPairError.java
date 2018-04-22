@@ -6,7 +6,7 @@ import com.sun.jna.Structure;
 import java.util.Arrays;
 import java.util.List;
 
-public class Curve25519GenerateKeyPair_RawReturn extends Structure implements Structure.ByValue {
+public class RawKeyPairError extends Structure implements Structure.ByValue {
     public Pointer r0;
     public int r1;
     public Pointer r2;

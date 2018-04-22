@@ -2,9 +2,11 @@ package in.freewind.bytom.go_exports;
 
 import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
-import in.freewind.bytom.go_exports.types.Curve25519GenerateKeyPair_Return;
-import in.freewind.bytom.go_exports.types.raw.Curve25519GenerateKeyPair_RawReturn;
-import in.freewind.bytom.go_exports.types.raw.Curve25519PreComputeSharedKey_RawReturn;
+import in.freewind.bytom.go_exports.types.KeyError;
+import in.freewind.bytom.go_exports.types.KeyPairError;
+import in.freewind.bytom.go_exports.types.raw.RawKey;
+import in.freewind.bytom.go_exports.types.raw.RawKeyError;
+import in.freewind.bytom.go_exports.types.raw.RawKeyPairError;
 
 public class GoBytom {
     private final GoBytomRaw raw;
@@ -13,21 +15,39 @@ public class GoBytom {
         this.raw = raw;
     }
 
-    public Curve25519GenerateKeyPair_Return curve25519GenerateKeyPair() {
-        Curve25519GenerateKeyPair_RawReturn rawResult = raw.Curve25519GenerateKeyPair();
-        Curve25519GenerateKeyPair_Return result = new Curve25519GenerateKeyPair_Return();
-        result.publicKey = rawResult.r0.getByteArray(0, rawResult.r1);
-        System.out.println("r1: " + rawResult.r1);
-        result.privateKey = rawResult.r2.getByteArray(0, rawResult.r3);
-        System.out.println("r3: " + rawResult.r3);
-        result.error = rawResult.r4;
-        return result;
+    public KeyPairError curve25519GenerateKeyPair() {
+        RawKeyPairError rawResult = raw.Curve25519GenerateKeyPair();
+        byte[] publicKey = rawResult.r0.getByteArray(0, rawResult.r1);
+        byte[] privateKey = rawResult.r2.getByteArray(0, rawResult.r3);
+        String error = rawResult.r4;
+        return new KeyPairError(publicKey, privateKey, error);
     }
 
     public byte[] curve25519PreComputeSharedKey(byte[] peerPublicKey, byte[] localPrivateKey) {
-        Curve25519PreComputeSharedKey_RawReturn rawResult = raw.Curve25519PreComputeSharedKey(createPointer(peerPublicKey), createPointer(localPrivateKey));
-        System.out.println("r1: " + rawResult.r1);
+        RawKey rawResult = raw.Curve25519PreComputeSharedKey(createPointer(peerPublicKey), createPointer(localPrivateKey));
         return rawResult.r0.getByteArray(0, rawResult.r1);
+    }
+
+    public byte[] ripemd126Hash(byte[] input) {
+        RawKey rawResult = raw.Ripemd126Hash(createPointer(input), input.length);
+        return rawResult.r0.getByteArray(0, rawResult.r1);
+    }
+
+    public byte[] sha256Hash(byte[] input) {
+        RawKey rawResult = raw.Sha256Hash(createPointer(input), input.length);
+        return rawResult.r0.getByteArray(0, rawResult.r1);
+    }
+
+    public byte[] ed25519GeneratePrivateKey() {
+        RawKey rawResult = raw.Ed25519GeneratePrivateKey();
+        return rawResult.r0.getByteArray(0, rawResult.r1);
+    }
+
+    public KeyError ed25519PublicKey(byte[] privateKey) {
+        RawKeyError rawResult = raw.Ed25519PublicKey(createPointer(privateKey), privateKey.length);
+        byte[] publicKey = rawResult.r0.getByteArray(0, rawResult.r1);
+        String error = rawResult.r2;
+        return new KeyError(publicKey, error);
     }
 
     private static Pointer createPointer(byte[] data) {

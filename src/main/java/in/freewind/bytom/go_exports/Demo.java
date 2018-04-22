@@ -1,8 +1,8 @@
 package in.freewind.bytom.go_exports;
 
-import in.freewind.bytom.go_exports.types.Curve25519GenerateKeyPair_Return;
+import in.freewind.bytom.go_exports.types.KeyError;
+import in.freewind.bytom.go_exports.types.KeyPairError;
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.File;
 import java.util.Arrays;
@@ -13,12 +13,43 @@ public class Demo {
         GoBytom bytom = GoBytomLoader.load(new File("./go/bytom-exports.so").getAbsolutePath());
         curve25519GenerateKeyPair(bytom);
         curve25519PreComputeSharedKey(bytom);
+        ripemd126Hash(bytom);
+        sha256Hash(bytom);
+        ed25519GeneratePrivateKey(bytom);
+        ed25519PublicKey(bytom);
+    }
+
+    private static void ed25519PublicKey(GoBytom bytom) {
+        System.out.println("--------------- Ed25519PublicKey ------------------");
+        byte[] privateKey = bytom.ed25519GeneratePrivateKey();
+        printBytes("privateKey", privateKey);
+        KeyError publicKey = bytom.ed25519PublicKey(privateKey);
+        printBytes("publicKey", publicKey.key);
+        System.out.println("error: " + publicKey.error);
+    }
+
+    private static void ed25519GeneratePrivateKey(GoBytom bytom) {
+        System.out.println("--------------- Ed25519GeneratePrivateKey ------------------");
+        byte[] privateKey = bytom.ed25519GeneratePrivateKey();
+        printBytes("privateKey", privateKey);
+    }
+
+    private static void sha256Hash(GoBytom bytom) {
+        System.out.println("--------------- Sha256Hash ------------------");
+        byte[] hash = bytom.sha256Hash(new byte[]{1, 2, 3});
+        printBytes("hash", hash);
+    }
+
+    private static void ripemd126Hash(GoBytom bytom) {
+        System.out.println("--------------- Ripemd126Hash ------------------");
+        byte[] hash = bytom.ripemd126Hash(new byte[]{1, 2, 3});
+        printBytes("hash", hash);
     }
 
     private static void curve25519PreComputeSharedKey(GoBytom bytom) {
         System.out.println("-------------- curve25519PreComputeSharedKey curve25519PreComputeSharedKey");
-        Curve25519GenerateKeyPair_Return localKeyPair = bytom.curve25519GenerateKeyPair();
-        Curve25519GenerateKeyPair_Return peerKeyPair = bytom.curve25519GenerateKeyPair();
+        KeyPairError localKeyPair = bytom.curve25519GenerateKeyPair();
+        KeyPairError peerKeyPair = bytom.curve25519GenerateKeyPair();
         byte[] sharedKey1 = bytom.curve25519PreComputeSharedKey(peerKeyPair.publicKey, localKeyPair.privateKey);
         printBytes("sharedKey1", sharedKey1);
         byte[] sharedKey2 = bytom.curve25519PreComputeSharedKey(localKeyPair.publicKey, peerKeyPair.privateKey);
@@ -28,7 +59,7 @@ public class Demo {
 
     private static void curve25519GenerateKeyPair(GoBytom bytom) {
         System.out.println("----------------- Curve25519GenerateKeyPair -----------------");
-        Curve25519GenerateKeyPair_Return result = bytom.curve25519GenerateKeyPair();
+        KeyPairError result = bytom.curve25519GenerateKeyPair();
         printBytes("public key", result.publicKey);
         printBytes("private key", result.privateKey);
         System.out.println("error: " + result.error);
@@ -37,6 +68,5 @@ public class Demo {
     private static void printBytes(String name, byte[] data) {
         System.out.println(name + ": " + new String(Hex.encodeHex(data)));
     }
-
 
 }

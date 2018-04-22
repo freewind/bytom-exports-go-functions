@@ -6,11 +6,12 @@ import com.sun.jna.Structure;
 import java.util.Arrays;
 import java.util.List;
 
-public class Curve25519PreComputeSharedKey_RawReturn extends Structure implements Structure.ByValue {
+public class RawKeyError extends Structure implements Structure.ByValue {
     public Pointer r0;
     public int r1;
+    public String r2;
 
     protected List<String> getFieldOrder() {
-        return Arrays.asList("r0", "r1");
+        return Arrays.asList("r0", "r1", "r2");
     }
 }

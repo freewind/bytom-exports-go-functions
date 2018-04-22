@@ -2,13 +2,20 @@ package in.freewind.bytom.go_exports;
 
 import com.sun.jna.Library;
 import com.sun.jna.Pointer;
-import in.freewind.bytom.go_exports.types.raw.Curve25519GenerateKeyPair_RawReturn;
-import in.freewind.bytom.go_exports.types.raw.Curve25519PreComputeSharedKey_RawReturn;
+import in.freewind.bytom.go_exports.types.raw.*;
 
 public interface GoBytomRaw extends Library {
 
-    Curve25519GenerateKeyPair_RawReturn Curve25519GenerateKeyPair();
+    RawKeyPairError Curve25519GenerateKeyPair();
 
-    Curve25519PreComputeSharedKey_RawReturn Curve25519PreComputeSharedKey(Pointer peerPublicKey, Pointer localPrivateKey);
+    RawKey Curve25519PreComputeSharedKey(Pointer peerPublicKey, Pointer localPrivateKey);
+
+    RawKey Ripemd126Hash(Pointer input, int inputLength);
+
+    RawKey Sha256Hash(Pointer input, int inputLength);
+
+    RawKey Ed25519GeneratePrivateKey();
+
+    RawKeyError Ed25519PublicKey(Pointer privateKey, int privateKeyLength);
 
 }

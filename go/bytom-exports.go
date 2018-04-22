@@ -5,12 +5,11 @@ import "C"
 //// formatter: on
 
 import (
-	"fmt"
 	"crypto/rand"
 	"golang.org/x/crypto/nacl/box"
-	//"golang.org/x/crypto/ripemd160"
-	//"crypto/sha256"
-	//"github.com/tendermint/go-crypto"
+	"golang.org/x/crypto/ripemd160"
+	"crypto/sha256"
+	"github.com/tendermint/go-crypto"
 	"unsafe"
 )
 
@@ -41,36 +40,47 @@ func Curve25519PreComputeSharedKey(peerPublicKey unsafe.Pointer, localPrivateKey
 	return
 }
 
-////export Ripemd126Hash
-//func Ripemd126Hash(input []byte) (hash []byte) {
-//	hasher := ripemd160.New()
-//	hasher.Write(input)
-//	hash = hasher.Sum(nil)
-//	return
-//}
-//
-////export Sha256Hash
-//func Sha256Hash(input []byte) (hash []byte) {
-//	hasher := sha256.New()
-//	hasher.Write(input)
-//	hash = hasher.Sum(nil)
-//	return
-//}
-//
-////export Ed25519GeneratePrivateKey
-//func Ed25519GeneratePrivateKey() []byte {
-//	return crypto.GenPrivKeyEd25519().Bytes()
-//}
-//
-////export Ed25519PublicKey
-//func Ed25519PublicKey(privateKeyBytes []byte) ([]byte, error) {
-//	privateKey, err := crypto.PrivKeyFromBytes(privateKeyBytes)
-//	if err != nil {
-//		return nil, err
-//	}
-//	return privateKey.PubKey().Bytes(), nil
-//}
+//export Ripemd126Hash
+func Ripemd126Hash(input unsafe.Pointer, inputLength int) (hash unsafe.Pointer, hashLength int) {
+	hasher := ripemd160.New()
+	hasher.Write(C.GoBytes(input, C.int(inputLength)))
+	result := hasher.Sum(nil)
+	hash = C.CBytes(result)
+	hashLength = len(result)
+	return
+}
 
+//export Sha256Hash
+func Sha256Hash(input unsafe.Pointer, inputLength int) (hash unsafe.Pointer, hashLength int) {
+	hasher := sha256.New()
+	hasher.Write(C.GoBytes(input, C.int(inputLength)))
+	result := hasher.Sum(nil)
+	hash = C.CBytes(result)
+	hashLength = len(result)
+	return
+}
+
+//export Ed25519GeneratePrivateKey
+func Ed25519GeneratePrivateKey() (privateKey unsafe.Pointer, privateKeyLength int) {
+	key := crypto.GenPrivKeyEd25519().Bytes()
+	privateKey = C.CBytes(key)
+	privateKeyLength = len(key)
+	return
+}
+
+//export Ed25519PublicKey
+func Ed25519PublicKey(privateKey unsafe.Pointer, privateKeyLength int) (publicKey unsafe.Pointer, publicKeyLength int, error *C.char) {
+	privateKeyBytes := C.GoBytes(privateKey, C.int(privateKeyLength))
+	priKey, err := crypto.PrivKeyFromBytes(privateKeyBytes)
+	if err != nil {
+		return nil, 0, C.CString(err.Error())
+	}
+	pubKey := priKey.PubKey().Bytes()
+	publicKey = C.CBytes(pubKey)
+	publicKeyLength = len(pubKey)
+	return
+}
+
+// required
 func main() {
-	fmt.Println("Hello go!")
 }
