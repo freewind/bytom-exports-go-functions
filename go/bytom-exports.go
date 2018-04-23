@@ -40,8 +40,8 @@ func Curve25519PreComputeSharedKey(peerPublicKey unsafe.Pointer, localPrivateKey
 	return
 }
 
-//export Ripemd126Hash
-func Ripemd126Hash(input unsafe.Pointer, inputLength int) (hash unsafe.Pointer, hashLength int) {
+//export Ripemd160Hash
+func Ripemd160Hash(input unsafe.Pointer, inputLength int) (hash unsafe.Pointer, hashLength int) {
 	hasher := ripemd160.New()
 	hasher.Write(C.GoBytes(input, C.int(inputLength)))
 	result := hasher.Sum(nil)

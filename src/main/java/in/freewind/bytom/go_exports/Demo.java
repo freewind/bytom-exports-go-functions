@@ -4,16 +4,15 @@ import in.freewind.bytom.go_exports.types.KeyError;
 import in.freewind.bytom.go_exports.types.KeyPairError;
 import org.apache.commons.codec.binary.Hex;
 
-import java.io.File;
 import java.util.Arrays;
 
 public class Demo {
 
     public static void main(String[] args) {
-        GoBytom bytom = GoBytomLoader.load(new File("./go/bytom-exports.so").getAbsolutePath());
+        GoBytom bytom = GoBytom.load();
         curve25519GenerateKeyPair(bytom);
         curve25519PreComputeSharedKey(bytom);
-        ripemd126Hash(bytom);
+        ripemd160Hash(bytom);
         sha256Hash(bytom);
         ed25519GeneratePrivateKey(bytom);
         ed25519PublicKey(bytom);
@@ -40,9 +39,9 @@ public class Demo {
         printBytes("hash", hash);
     }
 
-    private static void ripemd126Hash(GoBytom bytom) {
-        System.out.println("--------------- Ripemd126Hash ------------------");
-        byte[] hash = bytom.ripemd126Hash(new byte[]{1, 2, 3});
+    private static void ripemd160Hash(GoBytom bytom) {
+        System.out.println("--------------- Ripemd160Hash ------------------");
+        byte[] hash = bytom.ripemd160Hash(new byte[]{1, 2, 3});
         printBytes("hash", hash);
     }
 

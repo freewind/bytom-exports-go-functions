@@ -4,13 +4,13 @@ import com.sun.jna.Library;
 import com.sun.jna.Pointer;
 import in.freewind.bytom.go_exports.types.raw.*;
 
-public interface GoBytomRaw extends Library {
+interface GoBytomRaw extends Library {
 
     RawKeyPairError Curve25519GenerateKeyPair();
 
     RawKey Curve25519PreComputeSharedKey(Pointer peerPublicKey, Pointer localPrivateKey);
 
-    RawKey Ripemd126Hash(Pointer input, int inputLength);
+    RawKey Ripemd160Hash(Pointer input, int inputLength);
 
     RawKey Sha256Hash(Pointer input, int inputLength);
 

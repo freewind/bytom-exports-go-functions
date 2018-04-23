@@ -4,8 +4,8 @@
     <groupId>in.freewind</groupId>
     <artifactId>bytom-exports-go-functions</artifactId>
     <packaging>jar</packaging>
-    <version>1.0-SNAPSHOT</version>
-    <name>maven-demo</name>
+    <version>0.2</version>
+    <name>bytom-exports-go-functions</name>
     <url>http://maven.apache.org</url>
     <dependencies>
         <dependency>

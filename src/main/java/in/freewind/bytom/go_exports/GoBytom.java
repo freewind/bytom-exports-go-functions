@@ -1,6 +1,7 @@
 package in.freewind.bytom.go_exports;
 
 import com.sun.jna.Memory;
+import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import in.freewind.bytom.go_exports.types.KeyError;
 import in.freewind.bytom.go_exports.types.KeyPairError;
@@ -11,7 +12,7 @@ import in.freewind.bytom.go_exports.types.raw.RawKeyPairError;
 public class GoBytom {
     private final GoBytomRaw raw;
 
-    public GoBytom(GoBytomRaw raw) {
+    private GoBytom(GoBytomRaw raw) {
         this.raw = raw;
     }
 
@@ -28,8 +29,8 @@ public class GoBytom {
         return rawResult.r0.getByteArray(0, rawResult.r1);
     }
 
-    public byte[] ripemd126Hash(byte[] input) {
-        RawKey rawResult = raw.Ripemd126Hash(createPointer(input), input.length);
+    public byte[] ripemd160Hash(byte[] input) {
+        RawKey rawResult = raw.Ripemd160Hash(createPointer(input), input.length);
         return rawResult.r0.getByteArray(0, rawResult.r1);
     }
 
@@ -57,4 +58,8 @@ public class GoBytom {
         return pointer;
     }
 
+    public static GoBytom load() {
+        GoBytomRaw raw = Native.loadLibrary("bytom-exports", GoBytomRaw.class);
+        return new GoBytom(raw);
+    }
 }
