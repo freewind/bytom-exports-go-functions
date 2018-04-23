@@ -22,6 +22,8 @@ public class GoBytom {
     }
 
     public byte[] curve25519PreComputeSharedKey(byte[] peerPublicKey, byte[] localPrivateKey) {
+        assert (peerPublicKey.length == 32);
+        assert (localPrivateKey.length == 32);
         RawByteArray result = raw.Curve25519PreComputeSharedKey(createPointer(peerPublicKey), createPointer(localPrivateKey));
         return result.getByteArray();
     }
@@ -47,16 +49,21 @@ public class GoBytom {
     }
 
     public byte[] ed25519Sign(byte[] privateKey, byte[] data) {
+        assert (privateKey.length == 64);
         RawByteArray rawResult = raw.Ed25519Sign(createPointer(privateKey), privateKey.length, createPointer(data), data.length);
         return rawResult.getByteArray();
     }
 
     public byte[] secretboxSeal(byte[] message, byte[] nonce, byte[] key) {
+        assert (nonce.length == 24);
+        assert (key.length == 32);
         RawByteArray rawResult = raw.SecretboxSeal(createPointer(message), message.length, createPointer(nonce), nonce.length, createPointer(key), key.length);
         return rawResult.getByteArray();
     }
 
     public byte[] secretboxOpen(byte[] box, byte[] nonce, byte[] key) {
+        assert (nonce.length == 24);
+        assert (key.length == 32);
         RawByteArray rawResult = raw.SecretboxOpen(createPointer(box), box.length, createPointer(nonce), nonce.length, createPointer(key), key.length);
         return rawResult.getByteArray();
     }
