@@ -129,6 +129,22 @@ struct Ed25519Sign_return {
 
 extern struct Ed25519Sign_return Ed25519Sign(void* p0, GoInt p1, void* p2, GoInt p3);
 
+/* Return type for SecretboxSeal */
+struct SecretboxSeal_return {
+	void* r0; /* sealedPointer */
+	GoInt r1; /* sealedLength */
+};
+
+extern struct SecretboxSeal_return SecretboxSeal(void* p0, GoInt p1, void* p2, GoInt p3, void* p4, GoInt p5);
+
+/* Return type for SecretboxOpen */
+struct SecretboxOpen_return {
+	void* r0; /* messagePointer */
+	GoInt r1; /* messageLength */
+};
+
+extern struct SecretboxOpen_return SecretboxOpen(void* p0, GoInt p1, void* p2, GoInt p3, void* p4, GoInt p5);
+
 #ifdef __cplusplus
 }
 #endif

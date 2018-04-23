@@ -17,43 +17,48 @@ public class GoBytom {
     }
 
     public KeyPairError curve25519GenerateKeyPair() {
-        RawKeyPairError rawResult = raw.Curve25519GenerateKeyPair();
-        byte[] publicKey = rawResult.r0.getByteArray(0, rawResult.r1);
-        byte[] privateKey = rawResult.r2.getByteArray(0, rawResult.r3);
-        String error = rawResult.r4;
-        return new KeyPairError(publicKey, privateKey, error);
+        RawKeyPairError result = raw.Curve25519GenerateKeyPair();
+        return new KeyPairError(result.getKey1(), result.getKey2(), result.getError());
     }
 
     public byte[] curve25519PreComputeSharedKey(byte[] peerPublicKey, byte[] localPrivateKey) {
-        RawByteArray rawResult = raw.Curve25519PreComputeSharedKey(createPointer(peerPublicKey), createPointer(localPrivateKey));
-        return rawResult.r0.getByteArray(0, rawResult.r1);
+        RawByteArray result = raw.Curve25519PreComputeSharedKey(createPointer(peerPublicKey), createPointer(localPrivateKey));
+        return result.getByteArray();
     }
 
     public byte[] ripemd160Hash(byte[] input) {
-        RawByteArray rawResult = raw.Ripemd160Hash(createPointer(input), input.length);
-        return rawResult.r0.getByteArray(0, rawResult.r1);
+        RawByteArray result = raw.Ripemd160Hash(createPointer(input), input.length);
+        return result.getByteArray();
     }
 
     public byte[] sha256Hash(byte[] input) {
-        RawByteArray rawResult = raw.Sha256Hash(createPointer(input), input.length);
-        return rawResult.r0.getByteArray(0, rawResult.r1);
+        RawByteArray result = raw.Sha256Hash(createPointer(input), input.length);
+        return result.getByteArray();
     }
 
     public byte[] ed25519GeneratePrivateKey() {
-        RawByteArray rawResult = raw.Ed25519GeneratePrivateKey();
-        return rawResult.r0.getByteArray(0, rawResult.r1);
+        RawByteArray result = raw.Ed25519GeneratePrivateKey();
+        return result.getByteArray();
     }
 
     public KeyError ed25519PublicKey(byte[] privateKey) {
-        RawKeyError rawResult = raw.Ed25519PublicKey(createPointer(privateKey), privateKey.length);
-        byte[] publicKey = rawResult.r0.getByteArray(0, rawResult.r1);
-        String error = rawResult.r2;
-        return new KeyError(publicKey, error);
+        RawKeyError result = raw.Ed25519PublicKey(createPointer(privateKey), privateKey.length);
+        return new KeyError(result.getByteArray(), result.getError());
     }
 
     public byte[] ed25519Sign(byte[] privateKey, byte[] data) {
         RawByteArray rawResult = raw.Ed25519Sign(createPointer(privateKey), privateKey.length, createPointer(data), data.length);
-        return rawResult.r0.getByteArray(0, rawResult.r1);
+        return rawResult.getByteArray();
+    }
+
+    public byte[] secretboxSeal(byte[] message, byte[] nonce, byte[] key) {
+        RawByteArray rawResult = raw.SecretboxSeal(createPointer(message), message.length, createPointer(nonce), nonce.length, createPointer(key), key.length);
+        return rawResult.getByteArray();
+    }
+
+    public byte[] secretboxOpen(byte[] box, byte[] nonce, byte[] key) {
+        RawByteArray rawResult = raw.SecretboxOpen(createPointer(box), box.length, createPointer(nonce), nonce.length, createPointer(key), key.length);
+        return rawResult.getByteArray();
     }
 
     private static Pointer createPointer(byte[] data) {

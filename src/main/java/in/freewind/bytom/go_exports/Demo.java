@@ -17,6 +17,18 @@ public class Demo {
         ed25519GeneratePrivateKey(bytom);
         ed25519PublicKey(bytom);
         ed25519Sign(bytom);
+        secretboxSealOpen(bytom);
+    }
+
+    private static void secretboxSealOpen(GoBytom bytom) {
+        byte[] message = new byte[]{1, 2, 3, 4, 5};
+        byte[] nonce = new byte[]{1, 1, 1};
+        byte[] privateKey = bytom.ed25519GeneratePrivateKey();
+        byte[] box = bytom.secretboxSeal(message, nonce, privateKey);
+        printBytes("box", box);
+        byte[] open = bytom.secretboxOpen(box, nonce, privateKey);
+        printBytes("open", open);
+        System.out.println("Opened message should be same to original message: " + Arrays.equals(message, open));
     }
 
     private static void ed25519Sign(GoBytom bytom) {

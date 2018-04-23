@@ -12,6 +12,7 @@ import (
 	"github.com/tendermint/go-crypto"
 	"unsafe"
 	"github.com/tendermint/ed25519"
+	"golang.org/x/crypto/nacl/secretbox"
 )
 
 //export Curve25519GenerateKeyPair
@@ -81,6 +82,30 @@ func Ed25519Sign(privateKeyPointer unsafe.Pointer, privateKeyLength int, dataPoi
 
 func toBytes(pointer unsafe.Pointer, length int) []byte {
 	return C.GoBytes(pointer, C.int(length))
+}
+
+//export SecretboxSeal
+func SecretboxSeal(messagePointer unsafe.Pointer, messageLength int, noncePointer unsafe.Pointer, nonceLength int, keyPointer unsafe.Pointer, keyLength int) (sealedPointer unsafe.Pointer, sealedLength int) {
+	var nonce [24]byte
+	var key [32]byte
+	copy(nonce[:], toBytes(noncePointer, nonceLength))
+	copy(key[:], toBytes(keyPointer, keyLength))
+	sealed := secretbox.Seal([]byte{}, toBytes(messagePointer, messageLength), &nonce, &key)
+	return toPointer(sealed)
+}
+
+//export SecretboxOpen
+func SecretboxOpen(boxPointer unsafe.Pointer, boxLength int, noncePointer unsafe.Pointer, nonceLength int, keyPointer unsafe.Pointer, keyLength int) (messagePointer unsafe.Pointer, messageLength int) {
+	var nonce [24]byte
+	var key [32]byte
+	copy(nonce[:], toBytes(noncePointer, nonceLength))
+	copy(key[:], toBytes(keyPointer, keyLength))
+	message, ok := secretbox.Open([]byte{}, toBytes(boxPointer, boxLength), &nonce, &key)
+	if ok {
+		return toPointer(message)
+	} else {
+		return nil, 0
+	}
 }
 
 func toPointer(bytes []byte) (unsafe.Pointer, int) {

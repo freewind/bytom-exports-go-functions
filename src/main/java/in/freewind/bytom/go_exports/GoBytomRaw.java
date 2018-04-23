@@ -20,4 +20,8 @@ interface GoBytomRaw extends Library {
 
     RawByteArray Ed25519Sign(Pointer privateKeyPointer, int privateKeyLength, Pointer dataPointer, int dataPointerLength);
 
+    RawByteArray SecretboxSeal(Pointer messagePointer, int messageLength, Pointer noncePointer, int nonceLength, Pointer keyPointer, int keyLength);
+
+    RawByteArray SecretboxOpen(Pointer boxPointer, int boxLength, Pointer noncePointer, int nonceLength, Pointer keyPointer, int keyLength);
+
 }
