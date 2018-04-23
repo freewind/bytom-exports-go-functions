@@ -145,6 +145,14 @@ struct SecretboxOpen_return {
 
 extern struct SecretboxOpen_return SecretboxOpen(void* p0, GoInt p1, void* p2, GoInt p3, void* p4, GoInt p5);
 
+/* Return type for Wire_TwoByteArrays */
+struct Wire_TwoByteArrays_return {
+	void* r0; /* bytesPointer */
+	GoInt r1; /* bytesLength */
+};
+
+extern struct Wire_TwoByteArrays_return Wire_TwoByteArrays(void* p0, GoInt p1, void* p2, GoInt p3);
+
 #ifdef __cplusplus
 }
 #endif

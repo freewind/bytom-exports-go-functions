@@ -10,6 +10,7 @@ import (
 	"golang.org/x/crypto/ripemd160"
 	"crypto/sha256"
 	"github.com/tendermint/go-crypto"
+	"github.com/tendermint/go-wire"
 	"unsafe"
 	"github.com/tendermint/ed25519"
 	"golang.org/x/crypto/nacl/secretbox"
@@ -106,6 +107,19 @@ func SecretboxOpen(boxPointer unsafe.Pointer, boxLength int, noncePointer unsafe
 	} else {
 		return nil, 0
 	}
+}
+
+//export Wire_TwoByteArrays
+func Wire_TwoByteArrays(arrayPointer1 unsafe.Pointer, arrayLength1 int, arrayPointer2 unsafe.Pointer, arrayLength2 int) (bytesPointer unsafe.Pointer, bytesLength int) {
+	type Message struct {
+		Array1 []byte
+		Array2 []byte
+	}
+	bytes := wire.BinaryBytes(Message{
+		Array1: toBytes(arrayPointer1, arrayLength1),
+		Array2: toBytes(arrayPointer2, arrayLength2),
+	})
+	return toPointer(bytes)
 }
 
 func toPointer(bytes []byte) (unsafe.Pointer, int) {

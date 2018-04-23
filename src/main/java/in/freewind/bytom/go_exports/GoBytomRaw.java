@@ -24,4 +24,6 @@ interface GoBytomRaw extends Library {
 
     RawByteArray SecretboxOpen(Pointer boxPointer, int boxLength, Pointer noncePointer, int nonceLength, Pointer keyPointer, int keyLength);
 
+    RawByteArray Wire_TwoByteArrays(Pointer arrayPointer1, int arrayLength1, Pointer arrayPointer2, int arrayLength2);
+
 }
