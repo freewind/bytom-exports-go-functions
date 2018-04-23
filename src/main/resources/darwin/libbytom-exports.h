@@ -71,9 +71,9 @@ extern "C" {
 
 /* Return type for Curve25519GenerateKeyPair */
 struct Curve25519GenerateKeyPair_return {
-	void* r0; /* publicKey */
+	void* r0; /* publicKeyPointer */
 	GoInt r1; /* publicKeyLength */
-	void* r2; /* privateKey */
+	void* r2; /* privateKeyPointer */
 	GoInt r3; /* privateKeyLength */
 	char* r4; /* err */
 };
@@ -114,12 +114,20 @@ extern struct Ed25519GeneratePrivateKey_return Ed25519GeneratePrivateKey();
 
 /* Return type for Ed25519PublicKey */
 struct Ed25519PublicKey_return {
-	void* r0; /* publicKey */
+	void* r0; /* publicKeyPointer */
 	GoInt r1; /* publicKeyLength */
 	char* r2; /* error */
 };
 
 extern struct Ed25519PublicKey_return Ed25519PublicKey(void* p0, GoInt p1);
+
+/* Return type for Ed25519Sign */
+struct Ed25519Sign_return {
+	void* r0; /* signaturePointer */
+	GoInt r1; /* signatureLength */
+};
+
+extern struct Ed25519Sign_return Ed25519Sign(void* p0, GoInt p1, void* p2, GoInt p3);
 
 #ifdef __cplusplus
 }

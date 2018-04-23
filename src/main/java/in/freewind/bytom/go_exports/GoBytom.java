@@ -5,7 +5,7 @@ import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import in.freewind.bytom.go_exports.types.KeyError;
 import in.freewind.bytom.go_exports.types.KeyPairError;
-import in.freewind.bytom.go_exports.types.raw.RawKey;
+import in.freewind.bytom.go_exports.types.raw.RawByteArray;
 import in.freewind.bytom.go_exports.types.raw.RawKeyError;
 import in.freewind.bytom.go_exports.types.raw.RawKeyPairError;
 
@@ -25,22 +25,22 @@ public class GoBytom {
     }
 
     public byte[] curve25519PreComputeSharedKey(byte[] peerPublicKey, byte[] localPrivateKey) {
-        RawKey rawResult = raw.Curve25519PreComputeSharedKey(createPointer(peerPublicKey), createPointer(localPrivateKey));
+        RawByteArray rawResult = raw.Curve25519PreComputeSharedKey(createPointer(peerPublicKey), createPointer(localPrivateKey));
         return rawResult.r0.getByteArray(0, rawResult.r1);
     }
 
     public byte[] ripemd160Hash(byte[] input) {
-        RawKey rawResult = raw.Ripemd160Hash(createPointer(input), input.length);
+        RawByteArray rawResult = raw.Ripemd160Hash(createPointer(input), input.length);
         return rawResult.r0.getByteArray(0, rawResult.r1);
     }
 
     public byte[] sha256Hash(byte[] input) {
-        RawKey rawResult = raw.Sha256Hash(createPointer(input), input.length);
+        RawByteArray rawResult = raw.Sha256Hash(createPointer(input), input.length);
         return rawResult.r0.getByteArray(0, rawResult.r1);
     }
 
     public byte[] ed25519GeneratePrivateKey() {
-        RawKey rawResult = raw.Ed25519GeneratePrivateKey();
+        RawByteArray rawResult = raw.Ed25519GeneratePrivateKey();
         return rawResult.r0.getByteArray(0, rawResult.r1);
     }
 
@@ -49,6 +49,11 @@ public class GoBytom {
         byte[] publicKey = rawResult.r0.getByteArray(0, rawResult.r1);
         String error = rawResult.r2;
         return new KeyError(publicKey, error);
+    }
+
+    public byte[] ed25519Sign(byte[] privateKey, byte[] data) {
+        RawByteArray rawResult = raw.Ed25519Sign(createPointer(privateKey), privateKey.length, createPointer(data), data.length);
+        return rawResult.r0.getByteArray(0, rawResult.r1);
     }
 
     private static Pointer createPointer(byte[] data) {

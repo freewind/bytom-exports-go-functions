@@ -6,7 +6,7 @@ import com.sun.jna.Structure;
 import java.util.Arrays;
 import java.util.List;
 
-public class RawKey extends Structure implements Structure.ByValue {
+public class RawByteArray extends Structure implements Structure.ByValue {
     public Pointer r0;
     public int r1;
 

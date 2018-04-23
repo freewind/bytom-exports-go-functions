@@ -16,6 +16,15 @@ public class Demo {
         sha256Hash(bytom);
         ed25519GeneratePrivateKey(bytom);
         ed25519PublicKey(bytom);
+        ed25519Sign(bytom);
+    }
+
+    private static void ed25519Sign(GoBytom bytom) {
+        System.out.println("---------------- Ed25519Sign -----------------");
+        byte[] privateKey = bytom.ed25519GeneratePrivateKey();
+        byte[] data = new byte[]{1, 2, 3};
+        byte[] signature = bytom.ed25519Sign(privateKey, data);
+        printBytes("signature", signature);
     }
 
     private static void ed25519PublicKey(GoBytom bytom) {

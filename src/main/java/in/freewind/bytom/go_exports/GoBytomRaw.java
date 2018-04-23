@@ -8,14 +8,16 @@ interface GoBytomRaw extends Library {
 
     RawKeyPairError Curve25519GenerateKeyPair();
 
-    RawKey Curve25519PreComputeSharedKey(Pointer peerPublicKey, Pointer localPrivateKey);
+    RawByteArray Curve25519PreComputeSharedKey(Pointer peerPublicKey, Pointer localPrivateKey);
 
-    RawKey Ripemd160Hash(Pointer input, int inputLength);
+    RawByteArray Ripemd160Hash(Pointer input, int inputLength);
 
-    RawKey Sha256Hash(Pointer input, int inputLength);
+    RawByteArray Sha256Hash(Pointer input, int inputLength);
 
-    RawKey Ed25519GeneratePrivateKey();
+    RawByteArray Ed25519GeneratePrivateKey();
 
     RawKeyError Ed25519PublicKey(Pointer privateKey, int privateKeyLength);
+
+    RawByteArray Ed25519Sign(Pointer privateKeyPointer, int privateKeyLength, Pointer dataPointer, int dataPointerLength);
 
 }
