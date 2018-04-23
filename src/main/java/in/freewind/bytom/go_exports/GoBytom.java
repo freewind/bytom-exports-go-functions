@@ -68,7 +68,7 @@ public class GoBytom {
         return rawResult.getByteArray();
     }
 
-    public byte[] Wire_TwoByteArrays(byte[] array1, byte[] array2) {
+    public byte[] wire_TwoByteArrays(byte[] array1, byte[] array2) {
         RawByteArray result = raw.Wire_TwoByteArrays(createPointer(array1), array1.length, createPointer(array2), array2.length);
         return result.getByteArray();
     }

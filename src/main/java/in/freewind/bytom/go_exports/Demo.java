@@ -18,6 +18,14 @@ public class Demo {
         ed25519PublicKey(bytom);
         ed25519Sign(bytom);
         secretboxSealOpen(bytom);
+        wire_TwoByteArrays(bytom);
+    }
+
+    private static void wire_TwoByteArrays(GoBytom bytom) {
+        byte[] array1 = new byte[]{1, 2, 3};
+        byte[] array2 = new byte[]{4, 5, 6};
+        byte[] bytes = bytom.wire_TwoByteArrays(array1, array2);
+        printBytes("bytes", bytes);
     }
 
     private static void secretboxSealOpen(GoBytom bytom) {
