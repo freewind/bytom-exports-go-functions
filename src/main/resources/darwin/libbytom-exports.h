@@ -163,6 +163,8 @@ struct Unwire_TwoByteArrays_return {
 
 extern struct Unwire_TwoByteArrays_return Unwire_TwoByteArrays(void* p0, GoInt p1);
 
+extern GoUint8 Ed25519VerifySignature(void* p0, GoInt p1, void* p2, GoInt p3, void* p4, GoInt p5);
+
 #ifdef __cplusplus
 }
 #endif

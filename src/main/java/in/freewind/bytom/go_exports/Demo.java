@@ -52,11 +52,16 @@ public class Demo {
     }
 
     private static void ed25519Sign(GoBytom bytom) {
-        System.out.println("---------------- Ed25519Sign -----------------");
+        System.out.println("---------------- Ed25519Sign & Ed25519VerifySignature -----------------");
         byte[] privateKey = bytom.ed25519GeneratePrivateKey();
         byte[] data = new byte[]{1, 2, 3};
         byte[] signature = bytom.ed25519Sign(privateKey, data);
         printBytes("signature", signature);
+
+        byte[] publicKey = bytom.ed25519PublicKey(privateKey).key;
+
+        boolean ok = bytom.ed25519VerifySignature(publicKey, data, signature);
+        System.out.println("Verify result should be true: " + ok);
     }
 
     private static void ed25519PublicKey(GoBytom bytom) {
@@ -87,7 +92,7 @@ public class Demo {
     }
 
     private static void curve25519PreComputeSharedKey(GoBytom bytom) {
-        System.out.println("-------------- curve25519PreComputeSharedKey curve25519PreComputeSharedKey");
+        System.out.println("-------------- curve25519PreComputeSharedKey ---------------------");
         KeyPairError localKeyPair = bytom.curve25519GenerateKeyPair();
         KeyPairError peerKeyPair = bytom.curve25519GenerateKeyPair();
         byte[] sharedKey1 = bytom.curve25519PreComputeSharedKey(peerKeyPair.publicKey, localKeyPair.privateKey);

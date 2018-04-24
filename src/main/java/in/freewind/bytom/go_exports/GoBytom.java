@@ -80,6 +80,10 @@ public class GoBytom {
         return new TwoByteArrays(result.getByteArray1(), result.getByteArray2());
     }
 
+    public Boolean ed25519VerifySignature(byte[] publicKey, byte[] message, byte[] signature) {
+        return raw.Ed25519VerifySignature(createPointer(publicKey), publicKey.length, createPointer(message), message.length, createPointer(signature), signature.length);
+    }
+
     private static Pointer createPointer(byte[] data) {
         Pointer pointer = new Memory(data.length + 1);
         pointer.write(0, data, 0, data.length);

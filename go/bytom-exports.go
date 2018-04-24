@@ -133,6 +133,15 @@ func Unwire_TwoByteArrays(dataPointer unsafe.Pointer, dataLength int) (arrayPoin
 	return
 }
 
+//export Ed25519VerifySignature
+func Ed25519VerifySignature(publicKeyPointer unsafe.Pointer, publicKeyLength int, messagePointer unsafe.Pointer, messageLength int, signaturePointer unsafe.Pointer, signatureLength int) bool {
+	publicKey, err := crypto.PubKeyFromBytes(toBytes(publicKeyPointer, publicKeyLength))
+	if err != nil {
+		return false
+	}
+	return publicKey.VerifyBytes(toBytes(messagePointer, messageLength), crypto.SignatureEd25519FromBytes(toBytes(signaturePointer, signatureLength)))
+}
+
 func toPointer(bytes []byte) (unsafe.Pointer, int) {
 	return C.CBytes(bytes), len(bytes)
 }

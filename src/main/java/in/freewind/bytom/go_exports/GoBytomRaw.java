@@ -28,4 +28,6 @@ interface GoBytomRaw extends Library {
 
     RawTwoByteArrays Unwire_TwoByteArrays(Pointer dataPointer, int dataLength);
 
+    boolean Ed25519VerifySignature(Pointer publicKeyPointer, int publicKeyLength, Pointer messagePointer, int messageLength, Pointer signaturePointer, int signatureLength);
+    
 }
