@@ -5,9 +5,11 @@ import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import in.freewind.bytom.go_exports.types.KeyError;
 import in.freewind.bytom.go_exports.types.KeyPairError;
+import in.freewind.bytom.go_exports.types.TwoByteArrays;
 import in.freewind.bytom.go_exports.types.raw.RawByteArray;
 import in.freewind.bytom.go_exports.types.raw.RawKeyError;
 import in.freewind.bytom.go_exports.types.raw.RawKeyPairError;
+import in.freewind.bytom.go_exports.types.raw.RawTwoByteArrays;
 
 public class GoBytom {
     private final GoBytomRaw raw;
@@ -71,6 +73,11 @@ public class GoBytom {
     public byte[] wire_TwoByteArrays(byte[] array1, byte[] array2) {
         RawByteArray result = raw.Wire_TwoByteArrays(createPointer(array1), array1.length, createPointer(array2), array2.length);
         return result.getByteArray();
+    }
+
+    public TwoByteArrays unwire_TwoByteArrays(byte[] data) {
+        RawTwoByteArrays result = raw.Unwire_TwoByteArrays(createPointer(data), data.length);
+        return new TwoByteArrays(result.getByteArray1(), result.getByteArray2());
     }
 
     private static Pointer createPointer(byte[] data) {

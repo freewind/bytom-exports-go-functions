@@ -2,13 +2,15 @@ package in.freewind.bytom.go_exports;
 
 import in.freewind.bytom.go_exports.types.KeyError;
 import in.freewind.bytom.go_exports.types.KeyPairError;
+import in.freewind.bytom.go_exports.types.TwoByteArrays;
+import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 
 import java.util.Arrays;
 
 public class Demo {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws DecoderException {
         GoBytom bytom = GoBytom.load();
         curve25519GenerateKeyPair(bytom);
         curve25519PreComputeSharedKey(bytom);
@@ -19,9 +21,19 @@ public class Demo {
         ed25519Sign(bytom);
         secretboxSealOpen(bytom);
         wire_TwoByteArrays(bytom);
+        unwire_TwoByteArrays(bytom);
+    }
+
+    private static void unwire_TwoByteArrays(GoBytom bytom) throws DecoderException {
+        System.out.println("-------------- unwire_TwoByteArrays -----------------");
+        byte[] data = Hex.decodeHex("01030102030103040506");
+        TwoByteArrays result = bytom.unwire_TwoByteArrays(data);
+        printBytes("array1", result.array1);
+        printBytes("array2", result.array2);
     }
 
     private static void wire_TwoByteArrays(GoBytom bytom) {
+        System.out.println("-------------- wire_TwoByteArrays -----------------");
         byte[] array1 = new byte[]{1, 2, 3};
         byte[] array2 = new byte[]{4, 5, 6};
         byte[] bytes = bytom.wire_TwoByteArrays(array1, array2);

@@ -26,4 +26,6 @@ interface GoBytomRaw extends Library {
 
     RawByteArray Wire_TwoByteArrays(Pointer arrayPointer1, int arrayLength1, Pointer arrayPointer2, int arrayLength2);
 
+    RawTwoByteArrays Unwire_TwoByteArrays(Pointer dataPointer, int dataLength);
+
 }

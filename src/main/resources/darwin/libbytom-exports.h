@@ -153,6 +153,16 @@ struct Wire_TwoByteArrays_return {
 
 extern struct Wire_TwoByteArrays_return Wire_TwoByteArrays(void* p0, GoInt p1, void* p2, GoInt p3);
 
+/* Return type for Unwire_TwoByteArrays */
+struct Unwire_TwoByteArrays_return {
+	void* r0; /* arrayPointer1 */
+	GoInt r1; /* arrayLength1 */
+	void* r2; /* arrayPointer2 */
+	GoInt r3; /* arrayLength2 */
+};
+
+extern struct Unwire_TwoByteArrays_return Unwire_TwoByteArrays(void* p0, GoInt p1);
+
 #ifdef __cplusplus
 }
 #endif

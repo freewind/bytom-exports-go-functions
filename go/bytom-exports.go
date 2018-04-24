@@ -109,17 +109,28 @@ func SecretboxOpen(boxPointer unsafe.Pointer, boxLength int, noncePointer unsafe
 	}
 }
 
+type twoByteArrays struct {
+	Array1 []byte
+	Array2 []byte
+}
+
 //export Wire_TwoByteArrays
 func Wire_TwoByteArrays(arrayPointer1 unsafe.Pointer, arrayLength1 int, arrayPointer2 unsafe.Pointer, arrayLength2 int) (bytesPointer unsafe.Pointer, bytesLength int) {
-	type Message struct {
-		Array1 []byte
-		Array2 []byte
-	}
-	bytes := wire.BinaryBytes(Message{
+	bytes := wire.BinaryBytes(twoByteArrays{
 		Array1: toBytes(arrayPointer1, arrayLength1),
 		Array2: toBytes(arrayPointer2, arrayLength2),
 	})
 	return toPointer(bytes)
+}
+
+//export Unwire_TwoByteArrays
+func Unwire_TwoByteArrays(dataPointer unsafe.Pointer, dataLength int) (arrayPointer1 unsafe.Pointer, arrayLength1 int, arrayPointer2 unsafe.Pointer, arrayLength2 int) {
+	data := toBytes(dataPointer, dataLength)
+	obj := twoByteArrays{}
+	wire.ReadBinaryBytes(data, &obj)
+	arrayPointer1, arrayLength1 = toPointer(obj.Array1)
+	arrayPointer2, arrayLength2 = toPointer(obj.Array2)
+	return
 }
 
 func toPointer(bytes []byte) (unsafe.Pointer, int) {
