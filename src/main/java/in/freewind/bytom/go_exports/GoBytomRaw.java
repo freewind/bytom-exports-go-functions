@@ -8,7 +8,7 @@ interface GoBytomRaw extends Library {
 
     RawKeyPairError Curve25519GenerateKeyPair();
 
-    RawByteArray Curve25519PreComputeSharedKey(Pointer peerPublicKey, Pointer localPrivateKey);
+    RawByteArray Curve25519PreComputeSharedKey(Pointer peerPublicKey, int peerPublicKeyLength, Pointer localPrivateKey, int localPrivateKeyLength);
 
     RawByteArray Ripemd160Hash(Pointer input, int inputLength);
 
@@ -16,7 +16,7 @@ interface GoBytomRaw extends Library {
 
     RawByteArray Ed25519GeneratePrivateKey();
 
-    RawKeyError Ed25519PublicKey(Pointer privateKey, int privateKeyLength);
+    RawByteArray Ed25519PublicKey(Pointer privateKey, int privateKeyLength);
 
     RawByteArray Ed25519Sign(Pointer privateKeyPointer, int privateKeyLength, Pointer dataPointer, int dataPointerLength);
 
@@ -24,10 +24,14 @@ interface GoBytomRaw extends Library {
 
     RawByteArray SecretboxOpen(Pointer boxPointer, int boxLength, Pointer noncePointer, int nonceLength, Pointer keyPointer, int keyLength);
 
-    RawByteArray Wire_TwoByteArrays(Pointer arrayPointer1, int arrayLength1, Pointer arrayPointer2, int arrayLength2);
+    RawByteArray Wire_OneByteArray(Pointer arrayPointer1, int arrayLength1);
 
-    RawTwoByteArrays Unwire_TwoByteArrays(Pointer dataPointer, int dataLength);
+    RawByteArray Unwire_OneByteArray(Pointer arrayPointer1, int arrayLength1);
+
+    RawByteArray Wire_AuthSigMessage(Pointer publicKeyPointer, int publicKeyLength, Pointer signaturePointer, int signatureLength);
+
+    RawAuthSigMessage Unwire_AuthSigMessage(Pointer dataPointer, int dataLength);
 
     boolean Ed25519VerifySignature(Pointer publicKeyPointer, int publicKeyLength, Pointer messagePointer, int messageLength, Pointer signaturePointer, int signatureLength);
-    
+
 }

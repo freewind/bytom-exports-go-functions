@@ -12,15 +12,16 @@ import (
 	"github.com/tendermint/go-crypto"
 	"github.com/tendermint/go-wire"
 	"unsafe"
-	"github.com/tendermint/ed25519"
 	"golang.org/x/crypto/nacl/secretbox"
+	"github.com/freewind/bytom-exports-go-functions/go/ed25519"
+	"github.com/freewind/bytom-exports-go-functions/go/basic"
 )
 
 //export Curve25519GenerateKeyPair
 func Curve25519GenerateKeyPair() (publicKeyPointer unsafe.Pointer, publicKeyLength int, privateKeyPointer unsafe.Pointer, privateKeyLength int, err *C.char) {
 	tmpPublicKey, tmpPrivateKey, e := box.GenerateKey(rand.Reader)
-	publicKeyPointer, publicKeyLength = toPointer(tmpPublicKey[:])
-	privateKeyPointer, privateKeyLength = toPointer(tmpPrivateKey[:])
+	publicKeyPointer, publicKeyLength = basic.ToPointer(tmpPublicKey[:])
+	privateKeyPointer, privateKeyLength = basic.ToPointer(tmpPrivateKey[:])
 	if e == nil {
 		err = nil
 	} else {
@@ -30,120 +31,123 @@ func Curve25519GenerateKeyPair() (publicKeyPointer unsafe.Pointer, publicKeyLeng
 }
 
 //export Curve25519PreComputeSharedKey
-func Curve25519PreComputeSharedKey(peerPublicKey unsafe.Pointer, localPrivateKey unsafe.Pointer) (sharedKey unsafe.Pointer, sharedKeyLength int) {
+func Curve25519PreComputeSharedKey(peerPublicKeyPointer unsafe.Pointer, pLength int, localPrivateKeyPointer unsafe.Pointer, lLength int) (sharedKey unsafe.Pointer, sharedKeyLength int) {
+	peerPublicKey := basic.ToByte32(peerPublicKeyPointer, pLength)
+	localPrivateKey := basic.ToByte32(localPrivateKeyPointer, lLength)
 	sharedKeyBytes := new([32]byte)
-	var fixedPeerPublicKey, fixedLocalPrivateKey [32]byte
-	copy(fixedPeerPublicKey[:], toBytes(peerPublicKey, 32))
-	copy(fixedLocalPrivateKey[:], toBytes(localPrivateKey, 32))
-	box.Precompute(sharedKeyBytes, &fixedPeerPublicKey, &fixedLocalPrivateKey)
-	return toPointer(sharedKeyBytes[:])
+	box.Precompute(sharedKeyBytes, &peerPublicKey, &localPrivateKey)
+	return basic.ToPointer(sharedKeyBytes[:])
 }
 
 //export Ripemd160Hash
 func Ripemd160Hash(input unsafe.Pointer, inputLength int) (hash unsafe.Pointer, hashLength int) {
 	hasher := ripemd160.New()
-	hasher.Write(toBytes(input, inputLength))
+	hasher.Write(basic.ToSlice(input, inputLength))
 	result := hasher.Sum(nil)
-	return toPointer(result)
+	return basic.ToPointer(result)
 }
 
 //export Sha256Hash
 func Sha256Hash(input unsafe.Pointer, inputLength int) (hash unsafe.Pointer, hashLength int) {
 	hasher := sha256.New()
-	hasher.Write(toBytes(input, inputLength))
+	hasher.Write(basic.ToSlice(input, inputLength))
 	result := hasher.Sum(nil)
-	return toPointer(result)
+	return basic.ToPointer(result)
 }
 
 //export Ed25519GeneratePrivateKey
-func Ed25519GeneratePrivateKey() (privateKey unsafe.Pointer, privateKeyLength int) {
-	return toPointer(crypto.GenPrivKeyEd25519().Bytes())
+func Ed25519GeneratePrivateKey() (keyPointer unsafe.Pointer, keyLength int) {
+	privateKey := crypto.GenPrivKeyEd25519()
+	return ed25519.PrivateKeyToPointer(privateKey)
 }
 
 //export Ed25519PublicKey
-func Ed25519PublicKey(privateKeyPointer unsafe.Pointer, privateKeyLength int) (publicKeyPointer unsafe.Pointer, publicKeyLength int, error *C.char) {
-	privateKeyBytes := toBytes(privateKeyPointer, privateKeyLength)
-	priKey, err := crypto.PrivKeyFromBytes(privateKeyBytes)
-	if err != nil {
-		return nil, 0, C.CString(err.Error())
-	}
-	pubKey := priKey.PubKey().Bytes()
-	publicKeyPointer, publicKeyLength = toPointer(pubKey)
-	return
+func Ed25519PublicKey(privateKeyPointer unsafe.Pointer, privateKeyLength int) (publicKeyPointer unsafe.Pointer, publicKeyLength int) {
+	priKey := ed25519.ToPrivateKey(privateKeyPointer, privateKeyLength)
+	pubKey := priKey.PubKey()
+	return ed25519.PublicKeyToPointer(pubKey)
 }
 
 //export Ed25519Sign
 func Ed25519Sign(privateKeyPointer unsafe.Pointer, privateKeyLength int, dataPointer unsafe.Pointer, dataLength int) (signaturePointer unsafe.Pointer, signatureLength int) {
-	var privateKey [64]byte
-	copy(privateKey[:], toBytes(privateKeyPointer, privateKeyLength))
-	data := toBytes(dataPointer, dataLength)
-	signature := ed25519.Sign(&privateKey, data)
-	return toPointer(signature[:])
-}
-
-func toBytes(pointer unsafe.Pointer, length int) []byte {
-	return C.GoBytes(pointer, C.int(length))
+	privateKey := ed25519.ToPrivateKey(privateKeyPointer, privateKeyLength)
+	data := basic.ToSlice(dataPointer, dataLength)
+	signature := privateKey.Sign(data)
+	return ed25519.SignatureToPointer(signature)
 }
 
 //export SecretboxSeal
 func SecretboxSeal(messagePointer unsafe.Pointer, messageLength int, noncePointer unsafe.Pointer, nonceLength int, keyPointer unsafe.Pointer, keyLength int) (sealedPointer unsafe.Pointer, sealedLength int) {
-	var nonce [24]byte
-	var key [32]byte
-	copy(nonce[:], toBytes(noncePointer, nonceLength))
-	copy(key[:], toBytes(keyPointer, keyLength))
-	sealed := secretbox.Seal([]byte{}, toBytes(messagePointer, messageLength), &nonce, &key)
-	return toPointer(sealed)
+	nonce := basic.ToByte24(noncePointer, nonceLength)
+	key := basic.ToByte32(keyPointer, keyLength)
+	message := basic.ToSlice(messagePointer, messageLength)
+	sealedMessage := secretbox.Seal([]byte{}, message, &nonce, &key)
+	return basic.ToPointer(sealedMessage)
 }
 
 //export SecretboxOpen
 func SecretboxOpen(boxPointer unsafe.Pointer, boxLength int, noncePointer unsafe.Pointer, nonceLength int, keyPointer unsafe.Pointer, keyLength int) (messagePointer unsafe.Pointer, messageLength int) {
-	var nonce [24]byte
-	var key [32]byte
-	copy(nonce[:], toBytes(noncePointer, nonceLength))
-	copy(key[:], toBytes(keyPointer, keyLength))
-	message, ok := secretbox.Open([]byte{}, toBytes(boxPointer, boxLength), &nonce, &key)
+	nonce := basic.ToByte24(noncePointer, nonceLength)
+	key := basic.ToByte32(keyPointer, keyLength)
+	sealedMessage := basic.ToSlice(boxPointer, boxLength)
+	message, ok := secretbox.Open([]byte{}, sealedMessage, &nonce, &key)
 	if ok {
-		return toPointer(message)
+		return basic.ToPointer(message)
 	} else {
 		return nil, 0
 	}
 }
 
-type twoByteArrays struct {
-	Array1 []byte
-	Array2 []byte
-}
-
-//export Wire_TwoByteArrays
-func Wire_TwoByteArrays(arrayPointer1 unsafe.Pointer, arrayLength1 int, arrayPointer2 unsafe.Pointer, arrayLength2 int) (bytesPointer unsafe.Pointer, bytesLength int) {
-	bytes := wire.BinaryBytes(twoByteArrays{
-		Array1: toBytes(arrayPointer1, arrayLength1),
-		Array2: toBytes(arrayPointer2, arrayLength2),
+//export Wire_OneByteArray
+func Wire_OneByteArray(arrayPointer1 unsafe.Pointer, arrayLength1 int) (bytesPointer unsafe.Pointer, bytesLength int) {
+	bytes := wire.BinaryBytes(oneByteArray{
+		Array: basic.ToSlice(arrayPointer1, arrayLength1),
 	})
-	return toPointer(bytes)
+	return basic.ToPointer(bytes)
 }
 
-//export Unwire_TwoByteArrays
-func Unwire_TwoByteArrays(dataPointer unsafe.Pointer, dataLength int) (arrayPointer1 unsafe.Pointer, arrayLength1 int, arrayPointer2 unsafe.Pointer, arrayLength2 int) {
-	data := toBytes(dataPointer, dataLength)
-	obj := twoByteArrays{}
+//export Unwire_OneByteArray
+func Unwire_OneByteArray(dataPointer unsafe.Pointer, dataLength int) (arrayPointer1 unsafe.Pointer, arrayLength1 int) {
+	data := basic.ToSlice(dataPointer, dataLength)
+	obj := oneByteArray{}
 	wire.ReadBinaryBytes(data, &obj)
-	arrayPointer1, arrayLength1 = toPointer(obj.Array1)
-	arrayPointer2, arrayLength2 = toPointer(obj.Array2)
+	return basic.ToPointer(obj.Array)
+}
+
+//export Wire_AuthSigMessage
+func Wire_AuthSigMessage(publicKeyPointer unsafe.Pointer, publicKeyLength int, signaturePointer unsafe.Pointer, signatureLength int) (messagePointer unsafe.Pointer, messageLength int) {
+	bytes := wire.BinaryBytes(authSigMessage{
+		Key: ed25519.ToPublicKey(publicKeyPointer, publicKeyLength).Wrap(),
+		Sig: ed25519.ToSignature(signaturePointer, signatureLength).Wrap(),
+	})
+	return basic.ToPointer(bytes)
+}
+
+//export Unwire_AuthSigMessage
+func Unwire_AuthSigMessage(dataPointer unsafe.Pointer, dataLength int) (arrayPointer1 unsafe.Pointer, arrayLength1 int, arrayPointer2 unsafe.Pointer, arrayLength2 int) {
+	data := basic.ToSlice(dataPointer, dataLength)
+	obj := authSigMessage{}
+	wire.ReadBinaryBytes(data, &obj)
+	arrayPointer1, arrayLength1 = ed25519.PublicKeyToPointer(obj.Key)
+	arrayPointer2, arrayLength2 = ed25519.SignatureToPointer(obj.Sig)
 	return
 }
 
 //export Ed25519VerifySignature
 func Ed25519VerifySignature(publicKeyPointer unsafe.Pointer, publicKeyLength int, messagePointer unsafe.Pointer, messageLength int, signaturePointer unsafe.Pointer, signatureLength int) bool {
-	publicKey, err := crypto.PubKeyFromBytes(toBytes(publicKeyPointer, publicKeyLength))
-	if err != nil {
-		return false
-	}
-	return publicKey.VerifyBytes(toBytes(messagePointer, messageLength), crypto.SignatureEd25519FromBytes(toBytes(signaturePointer, signatureLength)))
+	publicKey := ed25519.ToPublicKey(publicKeyPointer, publicKeyLength)
+	signature := ed25519.ToSignature(signaturePointer, signatureLength)
+	message := basic.ToSlice(messagePointer, messageLength)
+	return publicKey.VerifyBytes(message, signature.Wrap())
 }
 
-func toPointer(bytes []byte) (unsafe.Pointer, int) {
-	return C.CBytes(bytes), len(bytes)
+type oneByteArray struct {
+	Array []byte
+}
+
+type authSigMessage struct {
+	Key crypto.PubKey
+	Sig crypto.Signature
 }
 
 // required

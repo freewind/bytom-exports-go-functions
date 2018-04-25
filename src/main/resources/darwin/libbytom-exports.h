@@ -86,7 +86,7 @@ struct Curve25519PreComputeSharedKey_return {
 	GoInt r1; /* sharedKeyLength */
 };
 
-extern struct Curve25519PreComputeSharedKey_return Curve25519PreComputeSharedKey(void* p0, void* p1);
+extern struct Curve25519PreComputeSharedKey_return Curve25519PreComputeSharedKey(void* p0, GoInt p1, void* p2, GoInt p3);
 
 /* Return type for Ripemd160Hash */
 struct Ripemd160Hash_return {
@@ -106,8 +106,8 @@ extern struct Sha256Hash_return Sha256Hash(void* p0, GoInt p1);
 
 /* Return type for Ed25519GeneratePrivateKey */
 struct Ed25519GeneratePrivateKey_return {
-	void* r0; /* privateKey */
-	GoInt r1; /* privateKeyLength */
+	void* r0; /* keyPointer */
+	GoInt r1; /* keyLength */
 };
 
 extern struct Ed25519GeneratePrivateKey_return Ed25519GeneratePrivateKey();
@@ -116,7 +116,6 @@ extern struct Ed25519GeneratePrivateKey_return Ed25519GeneratePrivateKey();
 struct Ed25519PublicKey_return {
 	void* r0; /* publicKeyPointer */
 	GoInt r1; /* publicKeyLength */
-	char* r2; /* error */
 };
 
 extern struct Ed25519PublicKey_return Ed25519PublicKey(void* p0, GoInt p1);
@@ -145,23 +144,39 @@ struct SecretboxOpen_return {
 
 extern struct SecretboxOpen_return SecretboxOpen(void* p0, GoInt p1, void* p2, GoInt p3, void* p4, GoInt p5);
 
-/* Return type for Wire_TwoByteArrays */
-struct Wire_TwoByteArrays_return {
+/* Return type for Wire_OneByteArray */
+struct Wire_OneByteArray_return {
 	void* r0; /* bytesPointer */
 	GoInt r1; /* bytesLength */
 };
 
-extern struct Wire_TwoByteArrays_return Wire_TwoByteArrays(void* p0, GoInt p1, void* p2, GoInt p3);
+extern struct Wire_OneByteArray_return Wire_OneByteArray(void* p0, GoInt p1);
 
-/* Return type for Unwire_TwoByteArrays */
-struct Unwire_TwoByteArrays_return {
+/* Return type for Unwire_OneByteArray */
+struct Unwire_OneByteArray_return {
+	void* r0; /* arrayPointer1 */
+	GoInt r1; /* arrayLength1 */
+};
+
+extern struct Unwire_OneByteArray_return Unwire_OneByteArray(void* p0, GoInt p1);
+
+/* Return type for Wire_AuthSigMessage */
+struct Wire_AuthSigMessage_return {
+	void* r0; /* messagePointer */
+	GoInt r1; /* messageLength */
+};
+
+extern struct Wire_AuthSigMessage_return Wire_AuthSigMessage(void* p0, GoInt p1, void* p2, GoInt p3);
+
+/* Return type for Unwire_AuthSigMessage */
+struct Unwire_AuthSigMessage_return {
 	void* r0; /* arrayPointer1 */
 	GoInt r1; /* arrayLength1 */
 	void* r2; /* arrayPointer2 */
 	GoInt r3; /* arrayLength2 */
 };
 
-extern struct Unwire_TwoByteArrays_return Unwire_TwoByteArrays(void* p0, GoInt p1);
+extern struct Unwire_AuthSigMessage_return Unwire_AuthSigMessage(void* p0, GoInt p1);
 
 extern GoUint8 Ed25519VerifySignature(void* p0, GoInt p1, void* p2, GoInt p3, void* p4, GoInt p5);
 
