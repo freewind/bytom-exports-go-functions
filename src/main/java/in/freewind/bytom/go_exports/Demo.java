@@ -57,6 +57,7 @@ public class Demo {
         byte[] message = new byte[]{1, 2, 3, 4, 5};
         byte[] nonce = new byte[24];
         byte[] privateKey = bytom.curve25519GenerateKeyPair().privateKey;
+
         byte[] box = bytom.secretboxSeal(message, nonce, privateKey);
         printBytes("box", box);
         byte[] open = bytom.secretboxOpen(box, nonce, privateKey);
